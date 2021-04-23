@@ -14,7 +14,7 @@ namespace apitest.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MyGuestController : ControllerBase
     {
         private readonly ApiDbContext _context;
@@ -34,7 +34,7 @@ namespace apitest.Controllers
 
         // GET: api/MyGuest/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MyGuest>> GetMyGuest(uint id)
+        public async Task<ActionResult<MyGuest>> GetMyGuest(int id)
         {
             var myGuest = await _context.MyGuests.FindAsync(id);
 
@@ -49,7 +49,7 @@ namespace apitest.Controllers
         // PUT: api/MyGuest/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutMyGuest(uint id, MyGuest myGuest)
+        public async Task<IActionResult> PutMyGuest(int id, MyGuest myGuest)
         {
             if (id != myGuest.Id)
             {
@@ -90,7 +90,7 @@ namespace apitest.Controllers
 
         // DELETE: api/MyGuest/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMyGuest(uint id)
+        public async Task<IActionResult> DeleteMyGuest(int id)
         {
             var myGuest = await _context.MyGuests.FindAsync(id);
             if (myGuest == null)
@@ -105,7 +105,7 @@ namespace apitest.Controllers
         }
         
 
-        private bool MyGuestExists(uint id)
+        private bool MyGuestExists(int id)
         {
             return _context.MyGuests.Any(e => e.Id == id);
         }
