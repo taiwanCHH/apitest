@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace apitest.Data
 {
-    public partial class MyGuestDbContext : IdentityDbContext
+    public partial class MyGuestDbContext : DbContext
     {
         public MyGuestDbContext()
         {
         }
 
-        public MyGuestDbContext(DbContextOptions<ApiDbContext> options)
+        public MyGuestDbContext(DbContextOptions<MyGuestDbContext> options)
             : base(options)
         {
         }
