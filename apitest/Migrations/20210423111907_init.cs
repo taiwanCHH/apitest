@@ -12,8 +12,7 @@ namespace apitest.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int(6) unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<string>(type: "varchar(300)", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "varchar(200)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "TEXT", nullable: true)
@@ -27,8 +26,7 @@ namespace apitest.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int(6) unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<string>(type: "varchar(300)", nullable: false),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "varchar(200)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -53,9 +51,8 @@ namespace apitest.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int(6) unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<int>(type: "int(6) unsigned", nullable: false),
+                    Id = table.Column<string>(type: "varchar(300)", nullable: false),
+                    RoleId = table.Column<string>(type: "varchar(300)", nullable: false),
                     ClaimType = table.Column<string>(type: "TEXT", nullable: true),
                     ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -74,9 +71,8 @@ namespace apitest.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int(6) unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<int>(type: "int(6) unsigned", nullable: false),
+                    Id = table.Column<string>(type: "varchar(300)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(300)", nullable: false),
                     ClaimType = table.Column<string>(type: "TEXT", nullable: true),
                     ClaimValue = table.Column<string>(type: "TEXT", nullable: true)
                 },
@@ -95,10 +91,10 @@ namespace apitest.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "varchar(30)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "varchar(30)",  nullable: false),
+                    LoginProvider = table.Column<string>(type: "varchar(300)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "varchar(300)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<int>(type: "int(6) unsigned", nullable: false)
+                    UserId = table.Column<string>(type: "varchar(300)", nullable: false),
                     
                 },
                 constraints: table =>
@@ -116,9 +112,8 @@ namespace apitest.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int(6) unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RoleId = table.Column<int>(type: "int(6) unsigned", nullable: false)
+                    UserId = table.Column<string>(type: "varchar(300)", nullable: false),
+                    RoleId = table.Column<string>(type: "varchar(300)", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -141,8 +136,8 @@ namespace apitest.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int(6) unsigned", nullable: false),
-                    LoginProvider = table.Column<string>(type: "varchar(30)", maxLength: 128, nullable: false),
+                    UserId = table.Column<string>(type: "varchar(300)", nullable: false),
+                    LoginProvider = table.Column<string>(type: "varchar(300)", nullable: false),
                     Name = table.Column<string>(type: "varchar(30)", maxLength: 128, nullable: false),
                     Value = table.Column<string>(type: "TEXT", nullable: true)
                 },

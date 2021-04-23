@@ -39,6 +39,7 @@ namespace apitest
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
             
             services.AddDbContext<ApiDbContext>();
+            services.AddDbContext<MyGuestDbContext>();
 
             services.AddAuthentication(options => {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

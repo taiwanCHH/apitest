@@ -17,9 +17,9 @@ namespace apitest.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class MyGuestController : ControllerBase
     {
-        private readonly ApiDbContext _context;
+        private readonly MyGuestDbContext _context;
 
-        public MyGuestController(ApiDbContext context)
+        public MyGuestController(MyGuestDbContext context)
         {
             _context = context;
         }
