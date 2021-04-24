@@ -18,6 +18,13 @@ namespace apitest
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging((hostContext, logging)=>
+                {
+                    // Console
+                    logging.AddConsole();
+                    // Debug
+                    logging.AddDebug();
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

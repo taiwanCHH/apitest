@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using apitest.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace apitest.Controllers
 {
@@ -18,10 +19,12 @@ namespace apitest.Controllers
     public class MyGuestController : ControllerBase
     {
         private readonly MyGuestDbContext _context;
+        private readonly ILogger<MyGuestController> _logger;
 
-        public MyGuestController(MyGuestDbContext context)
+        public MyGuestController(MyGuestDbContext context,ILogger<MyGuestController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/MyGuest
@@ -36,6 +39,10 @@ namespace apitest.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<MyGuest>> GetMyGuest(int id)
         {
+            var claims = HttpContext.User.Claims;
+            var Id = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            _logger.LogInformation("id: ",Id);
+            
             var myGuest = await _context.MyGuests.FindAsync(id);
 
             if (myGuest == null)
