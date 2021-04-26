@@ -8,16 +8,19 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace apitest.Data
 {
-    public partial class ApiDbContext : IdentityDbContext
+    public partial class EcDbContext : DbContext
     {
-        public ApiDbContext()
+        public EcDbContext()
         {
         }
 
-        public ApiDbContext(DbContextOptions<ApiDbContext> options)
+        public EcDbContext(DbContextOptions<EcDbContext> options)
             : base(options)
         {
         }
+
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<Product> Products { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -26,5 +29,7 @@ namespace apitest.Data
                 optionsBuilder.UseMySql("server=127.0.0.1;port=3306;database=apidb;user=apiuser;password=test111", Microsoft.EntityFrameworkCore.ServerVersion.FromString("8.0.24"));
             }
         }
+
+
     }
 }
