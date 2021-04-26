@@ -14,11 +14,14 @@ using apitest.Data;
 using apitest.Models;
 using apitest.Models.DTOs.Requests;
 using apitest.Models.DTOs.Responses;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace apitest.Controllers
 {
     [Route("api/[controller]")] // api/authManagement
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AuthManagementController : ControllerBase
     {
         private readonly UserManager<IdentityUser> _userManager;
@@ -29,7 +32,7 @@ namespace apitest.Controllers
             UserManager<IdentityUser> userManager,
             IOptionsMonitor<JwtConfig> optionsMonitor,
             UserInfoController userInfoController
-            )
+        )
         {
             _userManager = userManager;
             _jwtConfig = optionsMonitor.CurrentValue;
@@ -37,93 +40,112 @@ namespace apitest.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("Register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto user)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 // We can utilise the model
                 var existingUser = await _userManager.FindByEmailAsync(user.Email);
 
-                if(existingUser != null)
+                if (existingUser != null)
                 {
-                    return BadRequest(new RegistrationResponse(){
-                            Errors = new List<string>() {
-                                "Email already in use"
-                            },
-                            Success = false
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>()
+                        {
+                            "Email already in use"
+                        },
+                        Success = false
                     });
                 }
 
-                var newUser = new IdentityUser { Email = user.Email };
+                var newUser = new IdentityUser {Email = user.Email};
                 var isCreated = await _userManager.CreateAsync(newUser, user.Password);
-                
-                if(isCreated.Succeeded)
-                {
-                    await _userInfoController.PostUserInfo(user);
-                    var jwtToken =  GenerateJwtToken( newUser);
 
-                    return Ok(new RegistrationResponse() {
-                       Success = true,
-                       Token = jwtToken
-                   });
-                } else {
-                    return BadRequest(new RegistrationResponse(){
-                            Errors = isCreated.Errors.Select(x => x.Description).ToList(),
-                            Success = false
+                if (isCreated.Succeeded)
+                {
+                    await _userInfoController.CreatUserInfo(user);
+                    var jwtToken = GenerateJwtToken(newUser);
+
+                    return Ok(new RegistrationResponse()
+                    {
+                        Success = true,
+                        Token = jwtToken
+                    });
+                }
+                else
+                {
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = isCreated.Errors.Select(x => x.Description).ToList(),
+                        Success = false
                     });
                 }
             }
 
-            return BadRequest(new RegistrationResponse(){
-                    Errors = new List<string>() {
-                        "Invalid payload"
-                    },
-                    Success = false
+            return BadRequest(new RegistrationResponse()
+            {
+                Errors = new List<string>()
+                {
+                    "Invalid payload"
+                },
+                Success = false
             });
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("Login")]
         public async Task<IActionResult> Login([FromBody] UserLoginRequest user)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var existingUser = await _userManager.FindByEmailAsync(user.Email);
 
-                if(existingUser == null) {
-                        return BadRequest(new RegistrationResponse(){
-                            Errors = new List<string>() {
-                                "Invalid login request"
-                            },
-                            Success = false
+                if (existingUser == null)
+                {
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>()
+                        {
+                            "Invalid login request"
+                        },
+                        Success = false
                     });
                 }
 
                 var isCorrect = await _userManager.CheckPasswordAsync(existingUser, user.Password);
 
-                if(!isCorrect) {
-                      return BadRequest(new RegistrationResponse(){
-                            Errors = new List<string>() {
-                                "Invalid login request"
-                            },
-                            Success = false
+                if (!isCorrect)
+                {
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>()
+                        {
+                            "Invalid login request"
+                        },
+                        Success = false
                     });
                 }
 
-                var jwtToken  =GenerateJwtToken(existingUser);
+                var jwtToken = GenerateJwtToken(existingUser);
 
-                return Ok(new RegistrationResponse() {
+                return Ok(new RegistrationResponse()
+                {
                     Success = true,
                     Token = jwtToken
                 });
             }
 
-            return BadRequest(new RegistrationResponse(){
-                    Errors = new List<string>() {
-                        "Invalid payload"
-                    },
-                    Success = false
+            return BadRequest(new RegistrationResponse()
+            {
+                Errors = new List<string>()
+                {
+                    "Invalid payload"
+                },
+                Success = false
             });
         }
 
@@ -131,39 +153,49 @@ namespace apitest.Controllers
         [Route("Password")]
         public async Task<IActionResult> Password([FromBody] UserPasswordDto user)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var claims = HttpContext.User.Claims;
                 var Id = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
                 var existingUser = await _userManager.FindByIdAsync(Id);
 
-                if(existingUser == null) {
-                    return BadRequest(new RegistrationResponse(){
-                        Errors = new List<string>() {
-                            "Invalid login request"
-                        },
-                        Success = false
-                    });
-                }
-                
-                var result = await _userManager.ChangePasswordAsync(existingUser, user.CurrentPassword,user.NewPassword);
-
-                if(!result.Succeeded) {
-                    return BadRequest(new RegistrationResponse(){
-                        Errors = new List<string>() {
+                if (existingUser == null)
+                {
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>()
+                        {
                             "Invalid login request"
                         },
                         Success = false
                     });
                 }
 
-                return Ok(new RegistrationResponse() {
+                var result =
+                    await _userManager.ChangePasswordAsync(existingUser, user.CurrentPassword, user.NewPassword);
+
+                if (!result.Succeeded)
+                {
+                    return BadRequest(new RegistrationResponse()
+                    {
+                        Errors = new List<string>()
+                        {
+                            "Invalid login request"
+                        },
+                        Success = false
+                    });
+                }
+
+                return Ok(new RegistrationResponse()
+                {
                     Success = true
                 });
             }
 
-            return BadRequest(new RegistrationResponse(){
-                Errors = new List<string>() {
+            return BadRequest(new RegistrationResponse()
+            {
+                Errors = new List<string>()
+                {
                     "Invalid payload"
                 },
                 Success = false
@@ -178,15 +210,16 @@ namespace apitest.Controllers
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new []
+                Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim("Id", user.Id), 
+                    new Claim("Id", user.Id),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(6),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
