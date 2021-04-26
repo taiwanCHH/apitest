@@ -23,61 +23,23 @@ namespace apitest.Controllers
 
         // GET: api/Cart
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cart>>> GetCarts()
+        public async Task<ActionResult<IEnumerable<Cart>>> GetCart()
         {
-            return await _context.Carts.ToListAsync();
+            var claims = HttpContext.User.Claims;
+            var userId = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            return await _context.Carts
+                .Where(b => b.UserId==userId)
+                .ToListAsync();
         }
 
-        // GET: api/Cart/5
+        // GET: api/AddCart/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cart>> GetCart(int id)
+        public async Task<ActionResult<Cart>> AddCart(int productId)
         {
-            var cart = await _context.Carts.FindAsync(id);
-
-            if (cart == null)
-            {
-                return NotFound();
-            }
-
-            return cart;
-        }
-
-        // PUT: api/Cart/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCart(int id, Cart cart)
-        {
-            if (id != cart.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(cart).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CartExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Cart
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Cart>> PostCart(Cart cart)
-        {
+            var claims = HttpContext.User.Claims;
+            var userId = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            var cart = new Cart() {UserId = userId, ProductId = productId};
             _context.Carts.Add(cart);
             await _context.SaveChangesAsync();
 
@@ -86,9 +48,11 @@ namespace apitest.Controllers
 
         // DELETE: api/Cart/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCart(int id)
+        public async Task<IActionResult> DeleteCart(int productId)
         {
-            var cart = await _context.Carts.FindAsync(id);
+            var claims = HttpContext.User.Claims;
+            var userId = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId==userId &&c.ProductId==productId );
             if (cart == null)
             {
                 return NotFound();

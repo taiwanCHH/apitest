@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using apitest.Configuration;
+using apitest.Data;
+using apitest.Models;
 using apitest.Models.DTOs.Requests;
 using apitest.Models.DTOs.Responses;
 
@@ -21,13 +23,17 @@ namespace apitest.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly JwtConfig _jwtConfig;
+        private readonly UserInfoController _userInfoController;
 
         public AuthManagementController(
             UserManager<IdentityUser> userManager,
-            IOptionsMonitor<JwtConfig> optionsMonitor)
+            IOptionsMonitor<JwtConfig> optionsMonitor,
+            UserInfoController userInfoController
+            )
         {
             _userManager = userManager;
             _jwtConfig = optionsMonitor.CurrentValue;
+            _userInfoController = userInfoController;
         }
 
         [HttpPost]
@@ -54,9 +60,10 @@ namespace apitest.Controllers
                 
                 if(isCreated.Succeeded)
                 {
-                   var jwtToken =  GenerateJwtToken( newUser);
+                    await _userInfoController.PostUserInfo(user);
+                    var jwtToken =  GenerateJwtToken( newUser);
 
-                   return Ok(new RegistrationResponse() {
+                    return Ok(new RegistrationResponse() {
                        Success = true,
                        Token = jwtToken
                    });

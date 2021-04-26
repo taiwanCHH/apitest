@@ -76,12 +76,12 @@ namespace apitest.Controllers
         // POST: api/UserInfo
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserInfo>> PostUserInfo(UserInfo userInfo)
+        public async Task<int> PostUserInfo(UserInfo userInfo)
         {
             _context.UserInfo.Add(userInfo);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUserInfo", new { id = userInfo.Id }, userInfo);
+            return await _context.SaveChangesAsync();;
         }
 
         // DELETE: api/UserInfo/5
