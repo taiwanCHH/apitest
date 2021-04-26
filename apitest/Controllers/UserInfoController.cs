@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using apitest.Data;
 using apitest.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace apitest.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class UserInfoController : ControllerBase
     {
         private readonly EcDbContext _context;
@@ -23,16 +26,11 @@ namespace apitest.Controllers
 
         // GET: api/UserInfo
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserInfo>>> GetUserInfo()
+        public async Task<ActionResult<UserInfo>> GetUserInfo()
         {
-            return await _context.UserInfo.ToListAsync();
-        }
-
-        // GET: api/UserInfo/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserInfo>> GetUserInfo(int id)
-        {
-            var userInfo = await _context.UserInfo.FindAsync(id);
+            var claims = HttpContext.User.Claims;
+            var id = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            var userInfo = await _context.UserInfo.FirstOrDefaultAsync(info => info.UserId == id);
 
             if (userInfo == null)
             {
@@ -44,15 +42,17 @@ namespace apitest.Controllers
 
         // PUT: api/UserInfo/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserInfo(int id, UserInfo userInfo)
+        [HttpPut]
+        public async Task<IActionResult> PutUserInfo([FromBody] UserInfo userInfo)
         {
-            if (id != userInfo.Id)
-            {
-                return BadRequest();
-            }
+            var claims = HttpContext.User.Claims;
+            var id = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            var currentUserInfo = await _context.UserInfo.FirstOrDefaultAsync(info => info.UserId == id);
+            currentUserInfo.UserPhone = userInfo.UserPhone;
+            currentUserInfo.UserSex = userInfo.UserSex;
+            currentUserInfo.UserBirthday = userInfo.UserBirthday;
 
-            _context.Entry(userInfo).State = EntityState.Modified;
+            _context.Entry(currentUserInfo).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace apitest.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserInfoExists(id))
+                if (!UserInfoExists(currentUserInfo.Id))
                 {
                     return NotFound();
                 }
@@ -73,22 +73,22 @@ namespace apitest.Controllers
             return NoContent();
         }
 
-        // POST: api/UserInfo
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<int> PostUserInfo(UserInfo userInfo)
+        internal async Task<int> CreatUserInfo(UserInfo userInfo)
         {
             _context.UserInfo.Add(userInfo);
-            await _context.SaveChangesAsync();
-
-            return await _context.SaveChangesAsync();;
+        
+            return await _context.SaveChangesAsync();
+            ;
         }
 
         // DELETE: api/UserInfo/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserInfo(int id)
         {
-            var userInfo = await _context.UserInfo.FindAsync(id);
+            var claims = HttpContext.User.Claims;
+            var Id = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+            var userInfo = await _context.UserInfo.FirstOrDefaultAsync(info => info.UserId == Id);
+
             if (userInfo == null)
             {
                 return NotFound();

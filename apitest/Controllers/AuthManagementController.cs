@@ -26,17 +26,17 @@ namespace apitest.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly JwtConfig _jwtConfig;
-        private readonly UserInfoController _userInfoController;
+        private readonly EcDbContext _ecDbContext;
 
         public AuthManagementController(
             UserManager<IdentityUser> userManager,
             IOptionsMonitor<JwtConfig> optionsMonitor,
-            UserInfoController userInfoController
+            EcDbContext ecDbContext
         )
         {
             _userManager = userManager;
             _jwtConfig = optionsMonitor.CurrentValue;
-            _userInfoController = userInfoController;
+            _ecDbContext = ecDbContext;
         }
 
         [HttpPost]
@@ -61,12 +61,15 @@ namespace apitest.Controllers
                     });
                 }
 
-                var newUser = new IdentityUser {Email = user.Email};
+                var newUser = new IdentityUser {Email = user.Email, UserName = user.UserName};
                 var isCreated = await _userManager.CreateAsync(newUser, user.Password);
 
                 if (isCreated.Succeeded)
                 {
-                    await _userInfoController.CreatUserInfo(user);
+                    user.UserId = newUser.Id;
+                    _ecDbContext.UserInfo.Add(user);
+                    await _ecDbContext.SaveChangesAsync();
+                    
                     var jwtToken = GenerateJwtToken(newUser);
 
                     return Ok(new RegistrationResponse()
