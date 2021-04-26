@@ -21,6 +21,7 @@ namespace apitest.Data
 
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<UserInfo> UserInfo { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

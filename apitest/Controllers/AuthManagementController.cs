@@ -49,8 +49,9 @@ namespace apitest.Controllers
                     });
                 }
 
-                var newUser = new IdentityUser() { Email = user.Email, UserName = user.Username};
+                var newUser = new IdentityUser { Email = user.Email };
                 var isCreated = await _userManager.CreateAsync(newUser, user.Password);
+                
                 if(isCreated.Succeeded)
                 {
                    var jwtToken =  GenerateJwtToken( newUser);
@@ -116,6 +117,49 @@ namespace apitest.Controllers
                         "Invalid payload"
                     },
                     Success = false
+            });
+        }
+
+        [HttpPost]
+        [Route("Password")]
+        public async Task<IActionResult> Password([FromBody] UserPasswordDto user)
+        {
+            if(ModelState.IsValid)
+            {
+                var claims = HttpContext.User.Claims;
+                var Id = claims.FirstOrDefault(x => x.Type == "Id")?.Value;
+                var existingUser = await _userManager.FindByIdAsync(Id);
+
+                if(existingUser == null) {
+                    return BadRequest(new RegistrationResponse(){
+                        Errors = new List<string>() {
+                            "Invalid login request"
+                        },
+                        Success = false
+                    });
+                }
+                
+                var result = await _userManager.ChangePasswordAsync(existingUser, user.CurrentPassword,user.NewPassword);
+
+                if(!result.Succeeded) {
+                    return BadRequest(new RegistrationResponse(){
+                        Errors = new List<string>() {
+                            "Invalid login request"
+                        },
+                        Success = false
+                    });
+                }
+
+                return Ok(new RegistrationResponse() {
+                    Success = true
+                });
+            }
+
+            return BadRequest(new RegistrationResponse(){
+                Errors = new List<string>() {
+                    "Invalid payload"
+                },
+                Success = false
             });
         }
 

@@ -5,53 +5,54 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using apitest.Data;
 using apitest.Models;
 
 namespace apitest.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TodoItemsController : ControllerBase
+    public class UserInfoController : ControllerBase
     {
-        private readonly TodoContext _context;
+        private readonly EcDbContext _context;
 
-        public TodoItemsController(TodoContext context)
+        public UserInfoController(EcDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/TodoItems
+        // GET: api/UserInfo
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<UserInfo>>> GetUserInfo()
         {
-            return await _context.TodoItems.ToListAsync();
+            return await _context.UserInfo.ToListAsync();
         }
 
-        // GET: api/TodoItems/5
+        // GET: api/UserInfo/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
+        public async Task<ActionResult<UserInfo>> GetUserInfo(int id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
+            var userInfo = await _context.UserInfo.FindAsync(id);
 
-            if (todoItem == null)
+            if (userInfo == null)
             {
                 return NotFound();
             }
 
-            return todoItem;
+            return userInfo;
         }
 
-        // PUT: api/TodoItems/5
+        // PUT: api/UserInfo/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
+        public async Task<IActionResult> PutUserInfo(int id, UserInfo userInfo)
         {
-            if (id != todoItem.Id)
+            if (id != userInfo.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(todoItem).State = EntityState.Modified;
+            _context.Entry(userInfo).State = EntityState.Modified;
 
             try
             {
@@ -59,7 +60,7 @@ namespace apitest.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TodoItemExists(id))
+                if (!UserInfoExists(id))
                 {
                     return NotFound();
                 }
@@ -72,38 +73,36 @@ namespace apitest.Controllers
             return NoContent();
         }
 
-        // POST: api/TodoItems
+        // POST: api/UserInfo
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        public async Task<ActionResult<UserInfo>> PostUserInfo(UserInfo userInfo)
         {
-            _context.TodoItems.Add(todoItem);
+            _context.UserInfo.Add(userInfo);
             await _context.SaveChangesAsync();
 
-            // return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
-            return CreatedAtAction("GetTodoItem", new { id = todoItem.Id }, todoItem);
-
+            return CreatedAtAction("GetUserInfo", new { id = userInfo.Id }, userInfo);
         }
 
-        // DELETE: api/TodoItems/5
+        // DELETE: api/UserInfo/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTodoItem(long id)
+        public async Task<IActionResult> DeleteUserInfo(int id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
-            if (todoItem == null)
+            var userInfo = await _context.UserInfo.FindAsync(id);
+            if (userInfo == null)
             {
                 return NotFound();
             }
 
-            _context.TodoItems.Remove(todoItem);
+            _context.UserInfo.Remove(userInfo);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool TodoItemExists(long id)
+        private bool UserInfoExists(int id)
         {
-            return _context.TodoItems.Any(e => e.Id == id);
+            return _context.UserInfo.Any(e => e.Id == id);
         }
     }
 }
