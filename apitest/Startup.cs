@@ -38,8 +38,12 @@ namespace apitest
         {
             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
             
-            services.AddDbContext<ApiDbContext>();
-            services.AddDbContext<EcDbContext>();
+            services.AddDbContext<ApiDbContext>(opt=>
+                opt.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
+                    new MySqlServerVersion(Configuration.GetConnectionString("DefaultVersion"))));
+            services.AddDbContext<EcDbContext>(opt=>
+                opt.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
+                    new MySqlServerVersion(Configuration.GetConnectionString("DefaultVersion"))));
 
             services.AddAuthentication(options => {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
