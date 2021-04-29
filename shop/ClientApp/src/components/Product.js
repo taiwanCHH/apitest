@@ -14,11 +14,11 @@ export default class Product extends React.Component {
     return (
       <Col sm={6} md={4} className="mb-3">
         <Card>
-          <CardImg width={'100%'} src={product.img} />
+          <CardImg width={'100%'} src={product.imgUrl} />
           <CardBody className="text-center">
-            <CardTitle>{product.title}</CardTitle>
+            <CardTitle>{product.name}</CardTitle>
             <CardSubtitle>價格：{product.price}</CardSubtitle>
-            <CardText>{product.desc}</CardText>
+            <CardText>{product.content}</CardText>
             <Button disabled={disabled} color="secondary" onClick={() => onClick(product)}>
               購買
             </Button>

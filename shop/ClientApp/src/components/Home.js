@@ -15,16 +15,7 @@ export class Home extends Component {
   }
 
   getProductList = () => {
-    axios.get('https://demojson.herokuapp.com/cart')
-      .then((response) => {
-        this.setState({
-          products: response.data,
-        });
-      });
-  }
-
-  getProductList = () => {
-    axios.get('https://demojson.herokuapp.com/cart')
+    axios.get('/api/Product')
       .then((response) => {
         this.setState({
           products: response.data,
@@ -63,6 +54,11 @@ export class Home extends Component {
     return (
       <div>
         <Container>
+        <Row>
+            
+            <Button color="primary" onClick={this.toggle}>購物車({cart.length})</Button>
+            
+          </Row>
         <Row>
             {
               products.map(product =>
