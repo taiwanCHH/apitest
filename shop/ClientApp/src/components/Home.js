@@ -89,7 +89,7 @@ export class Home extends Component {
                     cart.map((item, index) => (
                       <tr>
                         <th scope="row">{index + 1}</th>
-                        <td width="250">{item.title}</td>
+                        <td width="250">{item.name}</td>
                         <td>{item.price}</td>
                         <td><Button color="danger" onClick={() => this.deleteCartItem(index)}>X</Button>{' '}</td>
                       </tr>
