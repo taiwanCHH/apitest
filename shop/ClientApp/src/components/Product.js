@@ -15,8 +15,8 @@ export default class Product extends React.Component {
       <Col sm={6} md={4} className="mb-3">
         <Card>
           <CardImg width={'100%'} src={product.imgUrl} />
-          <CardBody className="text-center">
-            <CardTitle>{product.name}</CardTitle>
+          <CardBody >
+            <CardTitle tag="h5">{product.name}</CardTitle>
             <CardSubtitle>價格：{product.price}</CardSubtitle>
             <CardText>{product.content}</CardText>
             <Button disabled={disabled} color="secondary" onClick={() => onClick(product)}>
