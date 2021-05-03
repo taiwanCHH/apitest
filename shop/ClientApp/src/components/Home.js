@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Container, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Table, Alert } from 'reactstrap';
 import axios from 'axios';
 import Product from './Product.js';
-
+import ContextStore from '../App';
+import {Todos} from './Todos.js';
+ 
 export class Home extends Component {
   state = {
     modal: false,
@@ -13,7 +15,7 @@ export class Home extends Component {
   componentDidMount = () => {
     this.getProductList();
   }
-
+  
   getProductList = () => {
     axios.get('/api/Product')
       .then((response) => {
@@ -47,6 +49,8 @@ export class Home extends Component {
     });
   }
 
+  
+
   render () {
     const { modal, products, cart } = this.state;
     const totalPrice = cart.reduce((acc, item) => (acc += item.price), 0);
@@ -58,7 +62,10 @@ export class Home extends Component {
             
             <Button color="primary" onClick={this.toggle}>購物車({cart.length})</Button>
             
-          </Row>
+        </Row>
+        <Row>
+          <Todos/>
+        </Row>
         <Row>
             {
               products.map(product =>

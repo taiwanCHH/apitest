@@ -7,11 +7,11 @@ import { Counter } from './components/Counter';
 
 import './custom.css'
 
-export default class App extends Component {
-  static displayName = App.name;
 
-  render () {
-    return (
+
+function App () {
+  
+     return (
       <Layout>
         <Route exact path='/' component={Home} />
         <Route path='/counter' component={Counter} />
@@ -19,4 +19,4 @@ export default class App extends Component {
       </Layout>
     );
   }
-}
+export default App;
