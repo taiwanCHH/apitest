@@ -3,7 +3,7 @@ import { Container, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Tab
 import axios from 'axios';
 import Product from './Product.js';
 import ContextStore from '../App';
-import {Todos} from './Todos.js';
+import {Cart} from './Cart.js';
  
 export class Home extends Component {
   state = {
@@ -64,7 +64,7 @@ export class Home extends Component {
             
         </Row>
         <Row>
-          <Todos/>
+          <Cart/>
         </Row>
         <Row>
             {

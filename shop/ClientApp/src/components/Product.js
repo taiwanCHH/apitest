@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Col, Card, CardImg, CardBody, CardText, CardTitle, CardSubtitle, Button } from 'reactstrap';
 
 export default class Product extends React.Component {
+  
   static propTypes = {
     product: PropTypes.object,
     disabled: PropTypes.bool,
