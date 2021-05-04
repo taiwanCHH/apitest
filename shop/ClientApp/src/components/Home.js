@@ -1,31 +1,24 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { Container, Button, Row, Modal, ModalHeader, ModalBody, ModalFooter, Table, Alert } from 'reactstrap';
 import axios from 'axios';
 import Product from './Product.js';
 import ContextStore from '../App';
 import {Cart} from './Cart.js';
  
-export class Home extends Component {
-  state = {
-    modal: false,
-    products: [],
-    cart: [],
-  }
-
-  componentDidMount = () => {
-    this.getProductList();
-  }
+export const Home =props=> {
+  const[modal,setModal]=useState(false)
+  const[products,setProducts]=useState([])
+  const[cart,setCart]=useState([])
   
-  getProductList = () => {
-    axios.get('/api/Product')
-      .then((response) => {
-        this.setState({
-          products: response.data,
-        });
-      });
-  }
 
-  addToCart = (product) => {
+  useEffect(() => {
+    axios.get('/api/Product')
+      .then((response) => {setProducts(response.data)});
+  }, [setProducts]);
+  
+  
+
+  const addToCart = (product) => {
     const cart = this.state.cart;
     cart.push(product);
 
@@ -34,7 +27,7 @@ export class Home extends Component {
     });
   }
 
-  deleteCartItem = (index) => {
+  const deleteCartItem = (index) => {
     const cart = this.state.cart;
     cart.splice(index, 1);
 
@@ -43,7 +36,7 @@ export class Home extends Component {
     });
   }
 
-  toggle = () => {
+  const toggle = () => {
     this.setState({
       modal: !this.state.modal,
     });
@@ -51,16 +44,14 @@ export class Home extends Component {
 
   
 
-  render () {
-    const { modal, products, cart } = this.state;
-    const totalPrice = cart.reduce((acc, item) => (acc += item.price), 0);
+    // const totalPrice = cart.reduce((acc, item) => (acc += item.price), 0);
 
     return (
       <div>
         <Container>
         <Row>
             
-            <Button color="primary" onClick={this.toggle}>購物車({cart.length})</Button>
+            <Button color="primary" onClick={toggle}>購物車({cart.length})</Button>
             
         </Row>
         <Row>
@@ -73,14 +64,14 @@ export class Home extends Component {
                   key={product.id}
                   disabled={cart.find(item => item.id === product.id)}
                   product={product}
-                  onClick={this.addToCart}
+                  onClick={addToCart}
                 />
               )
             }
           </Row>
 
-          <Modal isOpen={modal} toggle={this.toggle}>
-            <ModalHeader toggle={this.toggle}>購物車</ModalHeader>
+          <Modal isOpen={modal} toggle={toggle}>
+            <ModalHeader toggle={toggle}>購物車</ModalHeader>
             <ModalBody>
               <Table>
                 <thead>
@@ -98,7 +89,7 @@ export class Home extends Component {
                         <th scope="row">{index + 1}</th>
                         <td width="250">{item.name}</td>
                         <td>{item.price}</td>
-                        <td><Button color="danger" onClick={() => this.deleteCartItem(index)}>X</Button>{' '}</td>
+                        <td><Button color="danger" onClick={() => deleteCartItem(index)}>X</Button>{' '}</td>
                       </tr>
                     ))
                   }
@@ -106,16 +97,16 @@ export class Home extends Component {
               </Table>
               <Alert color="success" className="text-right">
                 總價：
-                {totalPrice}
+                {/* {totalPrice} */}
               </Alert>
             </ModalBody>
             <ModalFooter>
-              <Button color="primary" disabled={cart.length === 0} onClick={() => alert(totalPrice)}>結帳</Button>{' '}
-              <Button color="secondary" onClick={this.toggle}>取消</Button>
+              <Button color="primary" disabled={cart.length === 0} onClick={() => alert('totalPrice')}>結帳</Button>{' '}
+              <Button color="secondary" onClick={toggle}>取消</Button>
             </ModalFooter>
           </Modal>
         </Container>
       </div>
     );
-  }
+  
 }

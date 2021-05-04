@@ -3,7 +3,6 @@ import {ContextStore} from '../index.js';
 
 export function Cart(){
     const value = React.useContext(ContextStore)
-  
     return (
         <React.Fragment>
           {
