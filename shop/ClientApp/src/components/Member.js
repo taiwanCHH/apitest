@@ -1,7 +1,7 @@
 import React, { Component,useState } from 'react';
 import { ContextStore } from '../index.js';
 import { Button, Form, FormGroup, Label, Input, FormFeedback, FormText } from 'reactstrap';
-import { usePasswordValidation } from "./usePasswordValidation";
+import {checkPassWordValidity, checkValidity} from "../shared/utility";
 
 export const Member = (props) => {
     const { cart, dispatch } = React.useContext(ContextStore);
@@ -10,16 +10,7 @@ export const Member = (props) => {
         firstPassword: "",
         secondPassword: "",
        });
-       const [emailState, setEmailState] = useState(true);
-    
-  const [
-    validLength,
-    hasNumber,
-    match,
-  ] = usePasswordValidation({
-  firstPassword: password.firstPassword,
-  secondPassword: password.secondPassword,
-  });
+    const [errorPassword, setErrorPassword] = useState('');
   
   
   const setFirst = (event) => {
@@ -28,9 +19,12 @@ export const Member = (props) => {
   const setSecond = (event) => {
     setPassword({ ...password, secondPassword: event.target.value });
   };
+  
   const submit=()=>{
-      console.log('v:'+validLength+' n:'+hasNumber+' m:'+match)
-      setEmailState(!(validLength && hasNumber && match))
+      var errorMessage=checkPassWordValidity(password.firstPassword,password.secondPassword)
+      console.log('v:'+errorMessage)
+      setErrorPassword(errorMessage)
+      console.log(checkValidity(password.firstPassword,{required:true}))
   }
 
     return (
@@ -45,11 +39,8 @@ export const Member = (props) => {
           </FormGroup>
           <FormGroup>
             <Label for="password">密碼</Label>
-            <Input invalid={ emailState === true } type="password" onChange={setFirst} name="password" id="password" placeholder="密碼" />
-            <FormFeedback >{validLength ? <span>True</span> : <span>要有六位密碼</span>}</FormFeedback>
-            <FormFeedback>{hasNumber ? <span>True</span> : <span>要有數字</span>}</FormFeedback>
-            <FormFeedback>{match ? <span>True</span> : <span>再次輸入不相符</span>}</FormFeedback>
-
+            <Input invalid={ errorPassword.length>0 }  type="password" onChange={setFirst} name="password" id="password" placeholder="密碼" />
+            <FormFeedback >{errorPassword}</FormFeedback>
           </FormGroup>
           <FormGroup>
             <Label for="password2">確認密碼</Label>

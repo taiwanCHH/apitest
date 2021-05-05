@@ -4,6 +4,24 @@ export const updateObject = (oldObject, updatedProperties) => {
         ...updatedProperties
     };
 };
+export const checkPassWordValidity = ( firstPassword,secondPassword ) => {
+    let error=''
+    let requiredLength=6
+    
+    if(error.length===0){
+        let len=(firstPassword.length >= requiredLength ? true : false);
+        error=len?'':'長度不夠,要有六位密碼'
+    }
+    if(error.length===0){   
+        let num=(/\d/.test(firstPassword));
+        error=num?"":"至少包含一個數字"
+    }
+    if(error.length===0){
+        let mat=(firstPassword && firstPassword === secondPassword);
+        error=mat?'':'確認密碼輸入不符'
+    }
+    return error
+}
 
 export const checkValidity = ( value, rules ) => {
     let isValid = true;

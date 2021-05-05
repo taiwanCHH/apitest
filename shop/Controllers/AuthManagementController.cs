@@ -16,6 +16,8 @@ using shop.Models.DTOs.Requests;
 using shop.Models.DTOs.Responses;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace apitest.Controllers
 {
@@ -51,12 +53,13 @@ namespace apitest.Controllers
 
                 if (existingUser != null)
                 {
+                    var errorEmail=new UserRegistrationDto{Email="Email already in use"};
+                    string jsonString = JsonSerializer.Serialize(errorEmail);
+                    var errors = new List<string>(){};
+                    errors.Add(jsonString);
                     return BadRequest(new RegistrationResponse()
                     {
-                        Errors = new List<string>()
-                        {
-                            "Email already in use"
-                        },
+                        Errors=errors,
                         Success = false
                     });
                 }
