@@ -10,7 +10,7 @@ import { CartCount } from './Cart.js';
 export const NavMenu = () => {
   const [collapsed, setcollapsed] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isAuth, setIsAuth] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
   const [title, setTitle] = useState('Member');
 
   const toggle = () => setDropdownOpen(!dropdownOpen);
@@ -36,10 +36,10 @@ export const NavMenu = () => {
                   {title}
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem tag="a" href="/cart" style={{ display: isAuth ? "none" : "block" }}>Sign in</DropdownItem>
-                  <DropdownItem tag="a" href="/cart" style={{ display: isAuth ? "none" : "block" }}>Sign up</DropdownItem>
-                  <DropdownItem tag="a" href="/cart" style={{ display: isAuth ? "block" : "none" }}>Info</DropdownItem>
-                  <DropdownItem tag="a" href="/cart" style={{ display: isAuth ? "block" : "none" }}>Change Password</DropdownItem>
+                  <DropdownItem tag="login" href="/login" style={{ display: isAuth ? "none" : "block" }}>Sign in</DropdownItem>
+                  <DropdownItem tag={Link} to="/register" style={{ display: isAuth ? "none" : "block" }}>Sign up</DropdownItem>
+                  <DropdownItem tag="info" href="/info" style={{ display: isAuth ? "block" : "none" }}>Info</DropdownItem>
+                  <DropdownItem tag="changepw" href="/changepw" style={{ display: isAuth ? "block" : "none" }}>Change Password</DropdownItem>
                   <DropdownItem style={{ display: isAuth ? "block" : "none" }}>Log Out</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
