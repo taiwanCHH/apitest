@@ -32,19 +32,25 @@ export const Member = (props) => {
     const setInfoBirthday = (event) => { setInfo({ ...info, birthday: event.target.value }); };
 
     const submit = () => {
-        setErrorName(checkEmptyValidity(info.name))
-        setErrorEmail(checkEmailValidity(info.email))
-        setErrorPassword(checkPassWordValidity(info.firstPassword, info.secondPassword))
-        setErrorSex(checkEmptyValidity(info.sex))
-        setErrorPhone(checkEmptyValidity(info.phone))
-        setErrorBirthday(checkEmptyValidity(info.birthday))
+        let errName=checkEmptyValidity(info.name)
+        setErrorName(errName)
+        let errEmail=checkEmailValidity(info.email)
+        setErrorEmail(errEmail)
+        let errPassword=checkPassWordValidity(info.firstPassword, info.secondPassword)
+        setErrorPassword(errPassword)
+        let errSex=checkEmptyValidity(info.sex)
+        setErrorSex(errSex)
+        let errPhone=checkEmptyValidity(info.phone)
+        setErrorPhone(errPhone)
+        let errBirthday=checkEmptyValidity(info.birthday)
+        setErrorBirthday(errBirthday)
 
-        if (errorName.length === 0 &&
-            errorEmail.length === 0 &&
-            errorPassword.length === 0 &&
-            errorSex.length === 0 &&
+        if (errName.length === 0 &&
+            errEmail.length === 0 &&
+            errPassword.length === 0 &&
+            errSex.length === 0 &&
             errorPhone.length === 0 &&
-            errorBirthday.length === 0) {
+            errBirthday.length === 0) {
             const user = {
                 "userPhone": info.phone,
                 "userSex": info.sex,
@@ -55,8 +61,20 @@ export const Member = (props) => {
 
             };
             axios.post('/api/AuthManagement/Register', user)
-                .then(response => console.log(response.data))
-                .catch((error) => {console.log('There was an error!', error.data.errors);});
+                .then(response => {
+                    console.log(response.data)
+                    localStorage.setItem('token', response.data.idToken);
+                    localStorage.setItem('userId', response.data.localId);
+                })
+                .catch( e => {
+                    let error = JSON.parse(e.response.data.errors[0]);
+                    if(error.Email!==null){
+                        setErrorEmail(error.Email)
+                    }else{
+                        console.log(e.response.data.errors)
+                    }
+                    
+                });
                 
         }
 

@@ -10,7 +10,7 @@ import { updateObject } from './shared/utility';
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
 
-const productsInitState = { 
+const productsInitState = {
   cart: [],
 }
 export const ContextStore = React.createContext({
@@ -18,21 +18,26 @@ export const ContextStore = React.createContext({
 })
 function productsReducer(state, action) {
   switch (action.type) {
-    case ActionType.ADD_PRODUCT: return addProduct(state,action);
+    case ActionType.ADD_PRODUCT: return addProduct(state, action);
+    case ActionType.AUTH_LOGIN: return authOpenLogin(state, action);
     default:
       return state;
   }
 }
 
-const addProduct=( state, action )=>{
-  
+const authOpenLogin = (state, action) => {
+  console.log('to login')
+  return Object.assign({}, state,{})
+}
+const addProduct = (state, action) => {
+
   return Object.assign({}, state, {
-    cart: state.cart.concat({ id: action.product.id,product: action.product })
+    cart: state.cart.concat({ id: action.product.id, product: action.product })
   });
 }
 
 function combineDispatchs(dispatchs) {
-  return function(obj) {
+  return function (obj) {
     for (let i = 0; i < dispatchs.length; i++) {
       dispatchs[i](obj);
     }
@@ -41,7 +46,7 @@ function combineDispatchs(dispatchs) {
 
 function Application() {
   const [pState, pDispatch] = React.useReducer(productsReducer, productsInitState);
-  
+
   return (
     <ContextStore.Provider
       value={{
