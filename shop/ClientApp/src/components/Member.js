@@ -81,7 +81,9 @@ export const Member = (props) => {
     }
 
     return (
+        
         <Form>
+            <h1>註冊</h1>
             <FormGroup>
                 <Label for="name" >暱稱</Label>
                 <Input invalid={errorName.length > 0} type="text" onChange={setInfoName} name="name" id="name" placeholder="暱稱" />
