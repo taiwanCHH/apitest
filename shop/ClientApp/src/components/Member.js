@@ -12,7 +12,7 @@ export const Member = (props) => {
     const [toastShow, setToastShow] = useState(false);
     const [toastColor, setToastColor] = useState(false);
     const [toastContent, setToastContent] = useState('hello');
-    const history=useHistory()
+    const history = useHistory()
     const [info, setInfo] = useState({
         name: "",
         email: "",
@@ -20,7 +20,7 @@ export const Member = (props) => {
         secondPassword: "",
         sex: "M",
         phone: "",
-        birthday: "",
+        birthday: "2021-05-01",
     });
     const [infoLogin, setInfoLogin] = useState({
         email: "",
@@ -28,8 +28,8 @@ export const Member = (props) => {
     });
     const [errorLoginEmail, setErrorLoginEmail] = useState('');
     const [errorLoginPassword, setErrorLoginPassword] = useState('');
-    const setLoginEmail = (event) => { setInfoLogin({ ...info, email: event.target.value }); };
-    const setLoginPassword = (event) => { setInfoLogin({ ...info, password: event.target.value }); };
+    const setLoginEmail = (event) => { setInfoLogin({ ...infoLogin, email: event.target.value }); };
+    const setLoginPassword = (event) => { setInfoLogin({ ...infoLogin, password: event.target.value }); };
 
     const toggleLogin = () => {
         dispatch({ type: ActionType.AUTH_LOGIN })
@@ -57,7 +57,7 @@ export const Member = (props) => {
             };
             axios.post('/api/AuthManagement/Login', user)
                 .then(response => {
-                    toggleAlert(true, 'Login succes')
+                    toggleAlert(true, '登入成功...即將回到首頁')
                     saveToken(response.data.token)
                     setTimeout(() => {
                         toggleLogin()
@@ -65,11 +65,8 @@ export const Member = (props) => {
                     }, 3000)
                 })
                 .catch(e => {
-                    try {
-                    } catch (error) {
-                        toggleAlert(false, e.response.data.errors)
-                        console.log(e.response.data.errors)
-                    }
+                    toggleAlert(false, e.response.data.errors)
+                    console.log(e.response.data.errors)
                 });
         }
 
@@ -132,6 +129,7 @@ export const Member = (props) => {
             axios.post('/api/AuthManagement/Register', user)
                 .then(response => {
                     saveToken(response.data.token)
+                    toggleAlert(true, '註冊成功...即將回到首頁')
                     setTimeout(() => {
                         history.push("/");
                     }, 3000)
@@ -193,6 +191,7 @@ export const Member = (props) => {
                         <Label for="birthday">生日</Label>
                         <Input
                             invalid={errorBirthday.length > 0}
+                            value={info.birthday}
                             type="date"
                             name="birthday"
                             id="birthday"
@@ -200,6 +199,9 @@ export const Member = (props) => {
                         />
                         <FormFeedback >{errorBirthday}</FormFeedback>
                     </FormGroup>
+                    <Alert color={toastColor ? "success" : "warning"} isOpen={toastShow}>
+                        {toastContent}
+                    </Alert>
                     <Button className="btn btn-primary" onClick={() => submit()}>Submit</Button>
                 </Form>
                 <Modal isOpen={modalLogin} toggle={toggleLogin}>

@@ -79,7 +79,7 @@ export const Home = props => {
       };
       axios.post('/api/AuthManagement/Login', user)
         .then(response => {
-          toggleAlert(true,'Login succes')
+          toggleAlert(true,'登入成功...')
           saveToken(response.data.token)
         })
         .catch(e => {

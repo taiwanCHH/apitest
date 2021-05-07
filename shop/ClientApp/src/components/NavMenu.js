@@ -8,10 +8,11 @@ import './NavMenu.css';
 import { CartCount } from './Cart.js';
 import { ContextStore } from '../index.js';
 import * as ActionType from '../store/ActionType';
+import { useHistory } from "react-router-dom";
 
 export const NavMenu = () => {
   const { title, isAuth, dispatch } = React.useContext(ContextStore);
-
+  const history=useHistory()
   const [collapsed, setcollapsed] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -22,6 +23,16 @@ export const NavMenu = () => {
   }
   const toggleLogout = () => {
     dispatch({ type: ActionType.AUTH_LOGOUT })
+    if(isAuth){
+      history.push("/")
+    }
+  }
+  const toggleCart = ()=>{
+    if(isAuth){
+      history.push("/cart")
+    }else{
+      toggleLogin()
+    }
   }
 
 
@@ -37,7 +48,7 @@ export const NavMenu = () => {
                 <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag={Link} className="text-dark" to="/cart">Cart(<CartCount />)</NavLink>
+                <NavLink tag="cart" className="text-dark" onClick={toggleCart}>Cart(<CartCount />)</NavLink>
               </NavItem>
               <Dropdown nav isOpen={dropdownOpen} toggle={toggle}>
                 <DropdownToggle nav caret>

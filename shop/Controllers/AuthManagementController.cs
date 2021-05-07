@@ -53,7 +53,7 @@ namespace apitest.Controllers
 
                 if (existingUser != null)
                 {
-                    var errorEmail=new UserRegistrationDto{Email="Email already in use"};
+                    var errorEmail=new UserRegistrationDto{Email="Email 已使用過"};
                     string jsonString = JsonSerializer.Serialize(errorEmail);
                     var errors = new List<string>(){};
                     errors.Add(jsonString);
@@ -117,7 +117,7 @@ namespace apitest.Controllers
                     {
                         Errors = new List<string>()
                         {
-                            "Invalid login request"
+                            "帳號或密碼錯誤"
                         },
                         Success = false
                     });
@@ -131,7 +131,7 @@ namespace apitest.Controllers
                     {
                         Errors = new List<string>()
                         {
-                            "Invalid login request"
+                            "帳號或密碼錯誤"
                         },
                         Success = false
                     });
