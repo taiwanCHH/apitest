@@ -63,8 +63,8 @@ export const Member = (props) => {
             axios.post('/api/AuthManagement/Register', user)
                 .then(response => {
                     console.log(response.data)
-                    localStorage.setItem('token', response.data.idToken);
-                    localStorage.setItem('userId', response.data.localId);
+                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('name', response.data.localId);
                 })
                 .catch(e => {
                     let error = JSON.parse(e.response.data.errors[0]);
@@ -137,10 +137,10 @@ export const Info = () => {
     const { cart, dispatch } = React.useContext(ContextStore);
 
     const [info, setInfo] = useState({
-        name: "aaa",
-        email: "bbb",
+        name: "",
+        email: "",
         sex: "M",
-        phone: "",
+        phone: '',
         birthday: "",
     });
     const [errorName, setErrorName] = useState('');
@@ -157,21 +157,29 @@ export const Info = () => {
 
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer '+'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6ImI3OTQzYWNlLTM1MzItNDUzNC1hYTI5LTE2ZDQ0MzkxMmI1MyIsImVtYWlsIjoiYWFhQGV4YW1wbGUuY29tIiwic3ViIjoiYWFhQGV4YW1wbGUuY29tIiwianRpIjoiOWZjNzgzNzMtM2VkZC00YzViLWFlMzMtNzg0ZmE1NzZmODFmIiwibmJmIjoxNjIwMzU2Nzg5LCJleHAiOjE2MjA4NzUxODksImlhdCI6MTYyMDM1Njc4OX0.jPP3blhK1bX9n6AqGH-uyUCu0SPwpC9IWSsCQk7uSZ8'
+        'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6ImI3OTQzYWNlLTM1MzItNDUzNC1hYTI5LTE2ZDQ0MzkxMmI1MyIsImVtYWlsIjoiYWFhQGV4YW1wbGUuY29tIiwic3ViIjoiYWFhQGV4YW1wbGUuY29tIiwianRpIjoiOWZjNzgzNzMtM2VkZC00YzViLWFlMzMtNzg0ZmE1NzZmODFmIiwibmJmIjoxNjIwMzU2Nzg5LCJleHAiOjE2MjA4NzUxODksImlhdCI6MTYyMDM1Njc4OX0.jPP3blhK1bX9n6AqGH-uyUCu0SPwpC9IWSsCQk7uSZ8'
     }
     useEffect(() => {
-        axios.get('/api/UserInfo',{
+        axios.get('/api/UserInfo', {
             headers: headers
-          })
+        })
             .then((response) => {
                 console.log(response)
+                setInfo({
+                    name: localStorage.getItem('name'),
+                    email: localStorage.getItem('email'),
+                    phone: response.data.userPhone,
+                    sex: response.data.userSex,
+                    birthday: response.data.userBirthday
+                });
             })
-            .catch(e=>{
-                console.log(e)
+            .catch(e => {
+
             });
     }, [setInfo]);
 
     const submit = () => {
+        console.log('llok')
         let errName = checkEmptyValidity(info.name)
         setErrorName(errName)
         let errEmail = checkEmailValidity(info.email)
@@ -193,10 +201,11 @@ export const Info = () => {
                 "userSex": info.sex,
                 "userBirthday": info.birthday,
             };
-            axios.put('/api/UserInfo', user)
+            axios.put('/api/UserInfo', user, {
+                headers: headers
+            })
                 .then(response => {
                     console.log(response.data)
-
                 })
                 .catch(e => {
                     console.log(e.response.data.errors)
@@ -230,13 +239,14 @@ export const Info = () => {
             </FormGroup>
             <FormGroup>
                 <Label for="phone">電話</Label>
-                <Input invalid={errorPhone.length > 0} type="number" onChange={setInfoPhone} name="phone" id="phone" placeholder="09xx 或 02xx" />
+                <Input invalid={errorPhone.length > 0} value={info.phone} type="number" onChange={setInfoPhone} name="phone" id="phone" placeholder="09xx 或 02xx" />
                 <FormFeedback >{errorPhone}</FormFeedback>
             </FormGroup>
             <FormGroup>
                 <Label for="birthday">生日</Label>
                 <Input
                     invalid={errorBirthday.length > 0}
+                    value={info.birthday}
                     type="date"
                     name="birthday"
                     id="birthday"
@@ -244,7 +254,7 @@ export const Info = () => {
                 />
                 <FormFeedback >{errorBirthday}</FormFeedback>
             </FormGroup>
-            <Button className="btn btn-primary" onClick={() => submit()}>修改資料</Button>
+            <Button className="btn btn-primary" onClick={() =>submit()}>修改資料</Button>
         </Form>
     );
 

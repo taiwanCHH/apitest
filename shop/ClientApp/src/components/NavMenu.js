@@ -14,7 +14,7 @@ export const NavMenu = () => {
 
   const [collapsed, setcollapsed] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isAuth, setIsAuth] = useState(true);
+  const [isAuth, setIsAuth] = useState(false);
   const [title, setTitle] = useState('Member');
 
   const toggle = () => setDropdownOpen(!dropdownOpen);
