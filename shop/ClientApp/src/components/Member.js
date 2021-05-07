@@ -3,6 +3,8 @@ import { ContextStore } from '../index.js';
 import { Button, Form, FormGroup, Label, Input, FormFeedback, FormText } from 'reactstrap';
 import { checkPassWordValidity, checkEmptyValidity, checkEmailValidity } from "../shared/utility";
 import axios from 'axios';
+import * as ActionType from '../store/ActionType';
+import {decode as base64_decode} from 'base-64';
 
 export const Member = (props) => {
     const { cart, dispatch } = React.useContext(ContextStore);
@@ -30,6 +32,16 @@ export const Member = (props) => {
     const setInfoSex = (event) => { setInfo({ ...info, sex: event.target.value }); };
     const setInfoPhone = (event) => { setInfo({ ...info, phone: event.target.value }); };
     const setInfoBirthday = (event) => { setInfo({ ...info, birthday: event.target.value }); };
+
+    const saveToken = (token)=>{
+        let aa=token.split(".");
+        let deToken = base64_decode(aa[1]);
+        let jsonToken = JSON.parse(deToken);
+        localStorage.setItem('token', token);
+        localStorage.setItem('name', jsonToken.sub);
+        localStorage.setItem('email', jsonToken.email);
+        dispatch({ type: ActionType.AUTH_SUCCESS, name: jsonToken.sub})
+      }
 
     const submit = () => {
         let errName = checkEmptyValidity(info.name)
@@ -62,9 +74,7 @@ export const Member = (props) => {
             };
             axios.post('/api/AuthManagement/Register', user)
                 .then(response => {
-                    console.log(response.data)
-                    localStorage.setItem('token', response.data.token);
-                    localStorage.setItem('name', response.data.localId);
+                    saveToken(response.data.token)
                 })
                 .catch(e => {
                     let error = JSON.parse(e.response.data.errors[0]);
@@ -155,9 +165,10 @@ export const Info = () => {
     const setInfoPhone = (event) => { setInfo({ ...info, phone: event.target.value }); };
     const setInfoBirthday = (event) => { setInfo({ ...info, birthday: event.target.value }); };
 
+    const token=localStorage.getItem('token')
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6ImI3OTQzYWNlLTM1MzItNDUzNC1hYTI5LTE2ZDQ0MzkxMmI1MyIsImVtYWlsIjoiYWFhQGV4YW1wbGUuY29tIiwic3ViIjoiYWFhQGV4YW1wbGUuY29tIiwianRpIjoiOWZjNzgzNzMtM2VkZC00YzViLWFlMzMtNzg0ZmE1NzZmODFmIiwibmJmIjoxNjIwMzU2Nzg5LCJleHAiOjE2MjA4NzUxODksImlhdCI6MTYyMDM1Njc4OX0.jPP3blhK1bX9n6AqGH-uyUCu0SPwpC9IWSsCQk7uSZ8'
+        'Authorization': 'Bearer ' + token
     }
     useEffect(() => {
         axios.get('/api/UserInfo', {

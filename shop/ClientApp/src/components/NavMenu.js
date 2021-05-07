@@ -10,17 +10,18 @@ import { ContextStore } from '../index.js';
 import * as ActionType from '../store/ActionType';
 
 export const NavMenu = () => {
-  const { cart, dispatch } = React.useContext(ContextStore);
+  const { title, isAuth, dispatch } = React.useContext(ContextStore);
 
   const [collapsed, setcollapsed] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isAuth, setIsAuth] = useState(false);
-  const [title, setTitle] = useState('Member');
 
   const toggle = () => setDropdownOpen(!dropdownOpen);
   const toggleNavbar = () => setcollapsed(!collapsed);
   const toggleLogin = () => {
     dispatch({ type: ActionType.AUTH_LOGIN })
+  }
+  const toggleLogout = () => {
+    dispatch({ type: ActionType.AUTH_LOGOUT })
   }
 
 
@@ -47,7 +48,7 @@ export const NavMenu = () => {
                   <DropdownItem tag={Link} to="/register" style={{ display: isAuth ? "none" : "block" }}>Register</DropdownItem>
                   <DropdownItem tag={Link} to="/info" style={{ display: isAuth ? "block" : "none" }}>Info</DropdownItem>
                   <DropdownItem tag={Link} href="/password" style={{ display: isAuth ? "block" : "none" }}>Change Password</DropdownItem>
-                  <DropdownItem style={{ display: isAuth ? "block" : "none" }}>Log Out</DropdownItem>
+                  <DropdownItem tag="logout" onClick={toggleLogout} style={{ display: isAuth ? "block" : "none" }}>Log Out</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </ul>

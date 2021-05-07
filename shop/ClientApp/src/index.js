@@ -12,24 +12,47 @@ const rootElement = document.getElementById('root');
 
 const productsInitState = {
   cart: [],
-  modalLogin: false
+  modalLogin: false,
+  title: 'Member',
+  isAuth: false,
 }
 export const ContextStore = React.createContext({
   cart: [],
   modalLogin: false,
+  title: 'Member',
+  isAuth: false,
 })
 function productsReducer(state, action) {
   switch (action.type) {
     case ActionType.ADD_PRODUCT: return addProduct(state, action);
     case ActionType.AUTH_LOGIN: return authOpenLogin(state, action);
+    case ActionType.AUTH_SUCCESS: return authLoginSucces(state, action);
+    case ActionType.AUTH_LOGOUT: return authLogout(state, action);
     default:
       return state;
   }
 }
+const authLogout = (state, action) => {
+  console.log('auth: ' + state)
+  localStorage.removeItem('token');
+  localStorage.removeItem('name');
+  localStorage.removeItem('email');
+  return Object.assign({}, state, {
+    title: 'Member',
+    isAuth: false,
+  });
+}
+const authLoginSucces = (state, action) => {
+  console.log('auth: ' + state)
+  return Object.assign({}, state, {
+    title: action.name,
+    isAuth: true
+  });
+}
 
 const authOpenLogin = (state, action) => {
-  console.log('auth: '+state)
-  return Object.assign({}, state,{
+  console.log('auth: ' + state)
+  return Object.assign({}, state, {
     modalLogin: !state.modalLogin
   });
 }
@@ -56,6 +79,8 @@ function Application() {
       value={{
         cart: pState.cart,
         modalLogin: pState.modalLogin,
+        title: pState.title,
+        isAuth: pState.isAuth,
         dispatch: combineDispatchs([pDispatch])
       }}
     >

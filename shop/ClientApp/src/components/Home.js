@@ -59,6 +59,7 @@ export const Home = props => {
     localStorage.setItem('token', token);
     localStorage.setItem('name', jsonToken.sub);
     localStorage.setItem('email', jsonToken.email);
+    dispatch({ type: ActionType.AUTH_SUCCESS, name: jsonToken.sub})
     setTimeout(() => {
       toggleLogin()
     }, 3000)
