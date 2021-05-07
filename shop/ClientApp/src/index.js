@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import * as ActionType from './store/ActionType';
+import axios from 'axios';
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
@@ -56,6 +57,16 @@ const authOpenLogin = (state, action) => {
   });
 }
 const addProduct = (state, action) => {
+  const token = localStorage.getItem('token')
+  const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+  }
+  axios.get('/api/Cart/'+action.product.id, {
+    headers: headers
+  })
+    .then((response) => { console.log(response) })
+    .catch(e => console.log(e));
 
   return Object.assign({}, state, {
     cart: state.cart.concat({ id: action.product.id, product: action.product })

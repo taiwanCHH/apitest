@@ -2,18 +2,6 @@ import React, { Component } from 'react';
 import { ContextStore } from '../index.js';
 import { Button, Table, Alert } from 'reactstrap';
 
-export function Cart() {
-    const value = React.useContext(ContextStore)
-
-    return (
-        <React.Fragment>
-            {
-                value.cart.length
-            }
-        </React.Fragment>
-    )
-}
-
 export function CartCount() {
     const value = React.useContext(ContextStore)
 

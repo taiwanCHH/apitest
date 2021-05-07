@@ -48,18 +48,18 @@ export const NavMenu = () => {
                 <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink tag="cart" className="text-dark" onClick={toggleCart}>Cart(<CartCount />)</NavLink>
+                <NavLink className="text-dark" onClick={toggleCart}>Cart(<CartCount />)</NavLink>
               </NavItem>
               <Dropdown nav isOpen={dropdownOpen} toggle={toggle}>
                 <DropdownToggle nav caret>
                   {title}
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem tag="login" onClick={toggleLogin} style={{ display: isAuth ? "none" : "block" }}>Login</DropdownItem>
+                  <DropdownItem onClick={toggleLogin} style={{ display: isAuth ? "none" : "block" }}>Login</DropdownItem>
                   <DropdownItem tag={Link} to="/register" style={{ display: isAuth ? "none" : "block" }}>Register</DropdownItem>
                   <DropdownItem tag={Link} to="/info" style={{ display: isAuth ? "block" : "none" }}>Info</DropdownItem>
                   <DropdownItem tag={Link} to="/password" style={{ display: isAuth ? "block" : "none" }}>Change Password</DropdownItem>
-                  <DropdownItem tag="logout" onClick={toggleLogout} style={{ display: isAuth ? "block" : "none" }}>Log Out</DropdownItem>
+                  <DropdownItem onClick={toggleLogout} style={{ display: isAuth ? "block" : "none" }}>Log Out</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </ul>
