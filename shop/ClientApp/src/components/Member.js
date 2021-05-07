@@ -1,14 +1,18 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ContextStore } from '../index.js';
-import { Button, Form, FormGroup, Label, Input, FormFeedback, FormText } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, FormFeedback, Container, Alert, Modal, ModalBody, ModalFooter, ModalHeader, } from 'reactstrap';
 import { checkPassWordValidity, checkEmptyValidity, checkEmailValidity } from "../shared/utility";
 import axios from 'axios';
 import * as ActionType from '../store/ActionType';
-import {decode as base64_decode} from 'base-64';
+import { decode as base64_decode } from 'base-64';
+import { useHistory } from "react-router-dom";
 
 export const Member = (props) => {
-    const { cart, dispatch } = React.useContext(ContextStore);
-
+    const { modalLogin, dispatch } = React.useContext(ContextStore);
+    const [toastShow, setToastShow] = useState(false);
+    const [toastColor, setToastColor] = useState(false);
+    const [toastContent, setToastContent] = useState('hello');
+    const history=useHistory()
     const [info, setInfo] = useState({
         name: "",
         email: "",
@@ -18,6 +22,59 @@ export const Member = (props) => {
         phone: "",
         birthday: "",
     });
+    const [infoLogin, setInfoLogin] = useState({
+        email: "",
+        password: "",
+    });
+    const [errorLoginEmail, setErrorLoginEmail] = useState('');
+    const [errorLoginPassword, setErrorLoginPassword] = useState('');
+    const setLoginEmail = (event) => { setInfoLogin({ ...info, email: event.target.value }); };
+    const setLoginPassword = (event) => { setInfoLogin({ ...info, password: event.target.value }); };
+
+    const toggleLogin = () => {
+        dispatch({ type: ActionType.AUTH_LOGIN })
+    }
+    const toggleAlert = (isSucces, content) => {
+        setToastContent(content)
+        setToastColor(isSucces)
+        setToastShow(true)
+        setTimeout(() => {
+            setToastShow(false)
+        }, 3000)
+    }
+
+    const sendLogin = () => {
+        let errEmail = checkEmailValidity(infoLogin.email)
+        setErrorLoginEmail(errEmail)
+        let errPassword = checkPassWordValidity(infoLogin.password, infoLogin.password)
+        setErrorLoginPassword(errPassword)
+        if (errEmail.length === 0 &&
+            errPassword.length === 0
+        ) {
+            const user = {
+                "email": infoLogin.email,
+                "password": infoLogin.password
+            };
+            axios.post('/api/AuthManagement/Login', user)
+                .then(response => {
+                    toggleAlert(true, 'Login succes')
+                    saveToken(response.data.token)
+                    setTimeout(() => {
+                        toggleLogin()
+                        history.push("/");
+                    }, 3000)
+                })
+                .catch(e => {
+                    try {
+                    } catch (error) {
+                        toggleAlert(false, e.response.data.errors)
+                        console.log(e.response.data.errors)
+                    }
+                });
+        }
+
+    }
+
     const [errorName, setErrorName] = useState('');
     const [errorEmail, setErrorEmail] = useState('');
     const [errorPassword, setErrorPassword] = useState('');
@@ -33,15 +90,15 @@ export const Member = (props) => {
     const setInfoPhone = (event) => { setInfo({ ...info, phone: event.target.value }); };
     const setInfoBirthday = (event) => { setInfo({ ...info, birthday: event.target.value }); };
 
-    const saveToken = (token)=>{
-        let aa=token.split(".");
+    const saveToken = (token) => {
+        let aa = token.split(".");
         let deToken = base64_decode(aa[1]);
         let jsonToken = JSON.parse(deToken);
         localStorage.setItem('token', token);
         localStorage.setItem('name', jsonToken.sub);
         localStorage.setItem('email', jsonToken.email);
-        dispatch({ type: ActionType.AUTH_SUCCESS, name: jsonToken.sub})
-      }
+        dispatch({ type: ActionType.AUTH_SUCCESS, name: jsonToken.sub })
+    }
 
     const submit = () => {
         let errName = checkEmptyValidity(info.name)
@@ -75,14 +132,19 @@ export const Member = (props) => {
             axios.post('/api/AuthManagement/Register', user)
                 .then(response => {
                     saveToken(response.data.token)
+                    setTimeout(() => {
+                        history.push("/");
+                    }, 3000)
                 })
                 .catch(e => {
-                    let error = JSON.parse(e.response.data.errors[0]);
-                    if (error.Email !== null) {
+                    try {
+                        let error = JSON.parse(e.response.data.errors[0]);
                         setErrorEmail(error.Email)
-                    } else {
+                    } catch (error) {
+                        toggleAlert(false, e.response.data.errors)
                         console.log(e.response.data.errors)
                     }
+
 
                 });
 
@@ -91,54 +153,81 @@ export const Member = (props) => {
     }
 
     return (
-
-        <Form>
-            <h3>註冊</h3>
-            <FormGroup>
-                <Label for="name" >暱稱</Label>
-                <Input invalid={errorName.length > 0} type="text" onChange={setInfoName} name="name" id="name" placeholder="暱稱" />
-                <FormFeedback >{errorName}</FormFeedback>
-            </FormGroup>
-            <FormGroup>
-                <Label for="email">Email</Label>
-                <Input invalid={errorEmail.length > 0} type="email" onChange={setInfoEmail} name="email" id="email" placeholder="email" />
-                <FormFeedback >{errorEmail}</FormFeedback>
-            </FormGroup>
-            <FormGroup>
-                <Label for="password">密碼</Label>
-                <Input invalid={errorPassword.length > 0} type="password" onChange={setInfoFirst} name="password" id="password" placeholder="密碼" />
-                <FormFeedback >{errorPassword}</FormFeedback>
-            </FormGroup>
-            <FormGroup>
-                <Label for="password2">確認密碼</Label>
-                <Input type="password" onChange={setInfoSecond} name="password2" id="password2" placeholder="確認密碼" />
-            </FormGroup>
-            <FormGroup>
-                <Label for="sex">性別</Label>
-                <Input invalid={errorSex.length > 0} value={info.sex} onChange={setInfoSex} type="select" name="sex" id="sex">
-                    <option value='M'>男</option>
-                    <option value='F'>女</option>
-                </Input>
-                <FormFeedback >{errorSex}</FormFeedback>
-            </FormGroup>
-            <FormGroup>
-                <Label for="phone">電話</Label>
-                <Input invalid={errorPhone.length > 0} type="number" onChange={setInfoPhone} name="phone" id="phone" placeholder="09xx 或 02xx" />
-                <FormFeedback >{errorPhone}</FormFeedback>
-            </FormGroup>
-            <FormGroup>
-                <Label for="birthday">生日</Label>
-                <Input
-                    invalid={errorBirthday.length > 0}
-                    type="date"
-                    name="birthday"
-                    id="birthday"
-                    onChange={setInfoBirthday}
-                />
-                <FormFeedback >{errorBirthday}</FormFeedback>
-            </FormGroup>
-            <Button className="btn btn-primary" onClick={() => submit()}>Submit</Button>
-        </Form>
+        <div>
+            <Container>
+                <Form>
+                    <h3>註冊</h3>
+                    <FormGroup>
+                        <Label for="name" >暱稱</Label>
+                        <Input invalid={errorName.length > 0} type="text" onChange={setInfoName} name="name" id="name" placeholder="暱稱" />
+                        <FormFeedback >{errorName}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="email">Email</Label>
+                        <Input invalid={errorEmail.length > 0} type="email" onChange={setInfoEmail} name="email" id="email" placeholder="email" />
+                        <FormFeedback >{errorEmail}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="password">密碼</Label>
+                        <Input invalid={errorPassword.length > 0} type="password" onChange={setInfoFirst} name="password" id="password" placeholder="密碼" />
+                        <FormFeedback >{errorPassword}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="password2">確認密碼</Label>
+                        <Input type="password" onChange={setInfoSecond} name="password2" id="password2" placeholder="確認密碼" />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="sex">性別</Label>
+                        <Input invalid={errorSex.length > 0} value={info.sex} onChange={setInfoSex} type="select" name="sex" id="sex">
+                            <option value='M'>男</option>
+                            <option value='F'>女</option>
+                        </Input>
+                        <FormFeedback >{errorSex}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="phone">電話</Label>
+                        <Input invalid={errorPhone.length > 0} type="number" onChange={setInfoPhone} name="phone" id="phone" placeholder="09xx 或 02xx" />
+                        <FormFeedback >{errorPhone}</FormFeedback>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="birthday">生日</Label>
+                        <Input
+                            invalid={errorBirthday.length > 0}
+                            type="date"
+                            name="birthday"
+                            id="birthday"
+                            onChange={setInfoBirthday}
+                        />
+                        <FormFeedback >{errorBirthday}</FormFeedback>
+                    </FormGroup>
+                    <Button className="btn btn-primary" onClick={() => submit()}>Submit</Button>
+                </Form>
+                <Modal isOpen={modalLogin} toggle={toggleLogin}>
+                    <ModalHeader toggle={toggleLogin}>登入</ModalHeader>
+                    <ModalBody>
+                        <Form>
+                            <FormGroup>
+                                <Label for="loginemail">Email</Label>
+                                <Input invalid={errorLoginEmail.length > 0} type="email" onChange={setLoginEmail} name="loginemail" id="loginemail" placeholder="email" />
+                                <FormFeedback >{errorLoginEmail}</FormFeedback>
+                            </FormGroup>
+                            <FormGroup>
+                                <Label for="loginpassword">密碼</Label>
+                                <Input invalid={errorLoginPassword.length > 0} type="password" onChange={setLoginPassword} name="loginpassword" id="loginpassword" placeholder="密碼" />
+                                <FormFeedback >{errorLoginPassword}</FormFeedback>
+                            </FormGroup>
+                        </Form>
+                        <Alert color={toastColor ? "success" : "warning"} isOpen={toastShow}>
+                            {toastContent}
+                        </Alert>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={sendLogin}>登入</Button>{' '}
+                        <Button color="secondary" onClick={toggleLogin}>取消</Button>
+                    </ModalFooter>
+                </Modal>
+            </Container>
+        </div>
     );
 
 }
@@ -165,7 +254,7 @@ export const Info = () => {
     const setInfoPhone = (event) => { setInfo({ ...info, phone: event.target.value }); };
     const setInfoBirthday = (event) => { setInfo({ ...info, birthday: event.target.value }); };
 
-    const token=localStorage.getItem('token')
+    const token = localStorage.getItem('token')
     const headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + token
@@ -265,7 +354,7 @@ export const Info = () => {
                 />
                 <FormFeedback >{errorBirthday}</FormFeedback>
             </FormGroup>
-            <Button className="btn btn-primary" onClick={() =>submit()}>修改資料</Button>
+            <Button className="btn btn-primary" onClick={() => submit()}>修改資料</Button>
         </Form>
     );
 

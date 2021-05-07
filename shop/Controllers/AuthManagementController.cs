@@ -78,8 +78,8 @@ namespace apitest.Controllers
                     return Ok(new RegistrationResponse()
                     {
                         Success = true,
-                        Token = jwtToken,
-                        name = existingUser.UserName
+                        Token = jwtToken
+    
                     });
                 }
                 else
@@ -142,8 +142,7 @@ namespace apitest.Controllers
                 return Ok(new RegistrationResponse()
                 {
                     Success = true,
-                    Token = jwtToken,
-                    name = existingUser.UserName
+                    Token = jwtToken
                 });
             }
 
