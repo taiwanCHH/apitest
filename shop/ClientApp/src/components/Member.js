@@ -236,7 +236,17 @@ export const Member = (props) => {
 
 export const Info = () => {
     const { cart, dispatch } = React.useContext(ContextStore);
-
+    const [toastShow, setToastShow] = useState(false);
+    const [toastColor, setToastColor] = useState(false);
+    const [toastContent, setToastContent] = useState('hello');
+    const toggleAlert = (isSucces, content) => {
+        setToastContent(content)
+        setToastColor(isSucces)
+        setToastShow(true)
+        setTimeout(() => {
+            setToastShow(false)
+        }, 3000)
+    }
     const [info, setInfo] = useState({
         name: "",
         email: "",
@@ -308,8 +318,10 @@ export const Info = () => {
             })
                 .then(response => {
                     console.log(response.data)
+                    toggleAlert(true, '修改成功')
                 })
                 .catch(e => {
+                    toggleAlert(false, '修改失敗:' + e.response.data.errors)
                     console.log(e.response.data.errors)
                 });
 
@@ -356,10 +368,96 @@ export const Info = () => {
                 />
                 <FormFeedback >{errorBirthday}</FormFeedback>
             </FormGroup>
+            <Alert color={toastColor ? "success" : "warning"} isOpen={toastShow}>
+                {toastContent}
+            </Alert>
             <Button className="btn btn-primary" onClick={() => submit()}>修改資料</Button>
         </Form>
     );
 
+
+}
+
+export const InfoPassword = () => {
+    const [info, setInfo] = useState({
+        currentPassword: "",
+        firstPassword: "",
+        secondPassword: "",
+    });
+    const [toastShow, setToastShow] = useState(false);
+    const [toastColor, setToastColor] = useState(false);
+    const [toastContent, setToastContent] = useState('hello');
+
+
+    const [errorCurrentPassword, setErrorCurrentPassword] = useState('');
+    const [errorPassword, setErrorPassword] = useState('');
+    const setCurrent = (event) => { setInfo({ ...info, currentPassword: event.target.value }); };
+    const setFirst = (event) => { setInfo({ ...info, firstPassword: event.target.value }); };
+    const setSecond = (event) => { setInfo({ ...info, secondPassword: event.target.value }); };
+
+    const toggleAlert = (isSucces, content) => {
+        setToastContent(content)
+        setToastColor(isSucces)
+        setToastShow(true)
+        setTimeout(() => {
+            setToastShow(false)
+        }, 3000)
+    }
+    const token = localStorage.getItem('token')
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    }
+
+    const submit = () => {
+        let errCurrentPassword = checkPassWordValidity(info.currentPassword, info.currentPassword)
+        setErrorCurrentPassword(errCurrentPassword)
+        let errPassword = checkPassWordValidity(info.firstPassword, info.secondPassword)
+        setErrorPassword(errPassword)
+
+        if (errPassword.length === 0 &&
+            errCurrentPassword.length === 0) {
+            const user = {
+                "currentPassword": info.currentPassword,
+                "newPassword": info.firstPassword
+            };
+            axios.post('/api/AuthManagement/Password', user, {
+                headers: headers
+            })
+                .then(response => {
+                    console.log(response.data)
+                    toggleAlert(true, '修改成功')
+                })
+                .catch(e => {
+                    toggleAlert(false, '修改失敗:' + e.response.data.errors)
+                    console.log(e.response.data.errors)
+                });
+
+        }
+
+    }
+
+    return <Form>
+        <h3>修改密碼</h3>
+        <FormGroup>
+            <Label for="cpassword">原本密碼</Label>
+            <Input invalid={errorCurrentPassword.length > 0} type="password" onChange={setCurrent} name="cpassword" id="cpassword" placeholder="原本密碼" />
+            <FormFeedback >{errorCurrentPassword}</FormFeedback>
+        </FormGroup>
+        <FormGroup>
+            <Label for="password">密碼</Label>
+            <Input invalid={errorPassword.length > 0} type="password" onChange={setFirst} name="password" id="password" placeholder="密碼" />
+            <FormFeedback >{errorPassword}</FormFeedback>
+        </FormGroup>
+        <FormGroup>
+            <Label for="password2">確認密碼</Label>
+            <Input type="password" onChange={setSecond} name="password2" id="password2" placeholder="確認密碼" />
+        </FormGroup>
+        <Alert color={toastColor ? "success" : "warning"} isOpen={toastShow}>
+            {toastContent}
+        </Alert>
+        <Button className="btn btn-primary" onClick={() => submit()}>修改資料</Button>
+    </Form>
 
 }
 

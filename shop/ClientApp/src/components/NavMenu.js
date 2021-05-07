@@ -12,7 +12,7 @@ import { useHistory } from "react-router-dom";
 
 export const NavMenu = () => {
   const { title, isAuth, dispatch } = React.useContext(ContextStore);
-  const history=useHistory()
+  const history = useHistory()
   const [collapsed, setcollapsed] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -23,14 +23,14 @@ export const NavMenu = () => {
   }
   const toggleLogout = () => {
     dispatch({ type: ActionType.AUTH_LOGOUT })
-    if(isAuth){
+    if (isAuth) {
       history.push("/")
     }
   }
-  const toggleCart = ()=>{
-    if(isAuth){
+  const toggleCart = () => {
+    if (isAuth) {
       history.push("/cart")
-    }else{
+    } else {
       toggleLogin()
     }
   }
@@ -58,7 +58,7 @@ export const NavMenu = () => {
                   <DropdownItem tag="login" onClick={toggleLogin} style={{ display: isAuth ? "none" : "block" }}>Login</DropdownItem>
                   <DropdownItem tag={Link} to="/register" style={{ display: isAuth ? "none" : "block" }}>Register</DropdownItem>
                   <DropdownItem tag={Link} to="/info" style={{ display: isAuth ? "block" : "none" }}>Info</DropdownItem>
-                  <DropdownItem tag={Link} href="/password" style={{ display: isAuth ? "block" : "none" }}>Change Password</DropdownItem>
+                  <DropdownItem tag={Link} to="/password" style={{ display: isAuth ? "block" : "none" }}>Change Password</DropdownItem>
                   <DropdownItem tag="logout" onClick={toggleLogout} style={{ display: isAuth ? "block" : "none" }}>Log Out</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
