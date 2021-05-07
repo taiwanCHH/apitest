@@ -12,9 +12,11 @@ const rootElement = document.getElementById('root');
 
 const productsInitState = {
   cart: [],
+  modalLogin: false
 }
 export const ContextStore = React.createContext({
   cart: [],
+  modalLogin: false,
 })
 function productsReducer(state, action) {
   switch (action.type) {
@@ -26,8 +28,10 @@ function productsReducer(state, action) {
 }
 
 const authOpenLogin = (state, action) => {
-  console.log('to login')
-  return Object.assign({}, state,{})
+  console.log('auth: '+state)
+  return Object.assign({}, state,{
+    modalLogin: !state.modalLogin
+  });
 }
 const addProduct = (state, action) => {
 
@@ -51,6 +55,7 @@ function Application() {
     <ContextStore.Provider
       value={{
         cart: pState.cart,
+        modalLogin: pState.modalLogin,
         dispatch: combineDispatchs([pDispatch])
       }}
     >

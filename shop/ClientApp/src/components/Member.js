@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { ContextStore } from '../index.js';
 import { Button, Form, FormGroup, Label, Input, FormFeedback, FormText } from 'reactstrap';
 import { checkPassWordValidity, checkEmptyValidity, checkEmailValidity } from "../shared/utility";
@@ -32,17 +32,17 @@ export const Member = (props) => {
     const setInfoBirthday = (event) => { setInfo({ ...info, birthday: event.target.value }); };
 
     const submit = () => {
-        let errName=checkEmptyValidity(info.name)
+        let errName = checkEmptyValidity(info.name)
         setErrorName(errName)
-        let errEmail=checkEmailValidity(info.email)
+        let errEmail = checkEmailValidity(info.email)
         setErrorEmail(errEmail)
-        let errPassword=checkPassWordValidity(info.firstPassword, info.secondPassword)
+        let errPassword = checkPassWordValidity(info.firstPassword, info.secondPassword)
         setErrorPassword(errPassword)
-        let errSex=checkEmptyValidity(info.sex)
+        let errSex = checkEmptyValidity(info.sex)
         setErrorSex(errSex)
-        let errPhone=checkEmptyValidity(info.phone)
+        let errPhone = checkEmptyValidity(info.phone)
         setErrorPhone(errPhone)
-        let errBirthday=checkEmptyValidity(info.birthday)
+        let errBirthday = checkEmptyValidity(info.birthday)
         setErrorBirthday(errBirthday)
 
         if (errName.length === 0 &&
@@ -66,24 +66,24 @@ export const Member = (props) => {
                     localStorage.setItem('token', response.data.idToken);
                     localStorage.setItem('userId', response.data.localId);
                 })
-                .catch( e => {
+                .catch(e => {
                     let error = JSON.parse(e.response.data.errors[0]);
-                    if(error.Email!==null){
+                    if (error.Email !== null) {
                         setErrorEmail(error.Email)
-                    }else{
+                    } else {
                         console.log(e.response.data.errors)
                     }
-                    
+
                 });
-                
+
         }
 
     }
 
     return (
-        
+
         <Form>
-            <h1>註冊</h1>
+            <h3>註冊</h3>
             <FormGroup>
                 <Label for="name" >暱稱</Label>
                 <Input invalid={errorName.length > 0} type="text" onChange={setInfoName} name="name" id="name" placeholder="暱稱" />
@@ -130,6 +130,124 @@ export const Member = (props) => {
             <Button className="btn btn-primary" onClick={() => submit()}>Submit</Button>
         </Form>
     );
+
+}
+
+export const Info = () => {
+    const { cart, dispatch } = React.useContext(ContextStore);
+
+    const [info, setInfo] = useState({
+        name: "aaa",
+        email: "bbb",
+        sex: "M",
+        phone: "",
+        birthday: "",
+    });
+    const [errorName, setErrorName] = useState('');
+    const [errorEmail, setErrorEmail] = useState('');
+    const [errorSex, setErrorSex] = useState('');
+    const [errorPhone, setErrorPhone] = useState('');
+    const [errorBirthday, setErrorBirthday] = useState('');
+
+    const setInfoName = (event) => { setInfo({ ...info, name: event.target.value }); };
+    const setInfoEmail = (event) => { setInfo({ ...info, email: event.target.value }); };
+    const setInfoSex = (event) => { setInfo({ ...info, sex: event.target.value }); };
+    const setInfoPhone = (event) => { setInfo({ ...info, phone: event.target.value }); };
+    const setInfoBirthday = (event) => { setInfo({ ...info, birthday: event.target.value }); };
+
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJZCI6ImI3OTQzYWNlLTM1MzItNDUzNC1hYTI5LTE2ZDQ0MzkxMmI1MyIsImVtYWlsIjoiYWFhQGV4YW1wbGUuY29tIiwic3ViIjoiYWFhQGV4YW1wbGUuY29tIiwianRpIjoiOWZjNzgzNzMtM2VkZC00YzViLWFlMzMtNzg0ZmE1NzZmODFmIiwibmJmIjoxNjIwMzU2Nzg5LCJleHAiOjE2MjA4NzUxODksImlhdCI6MTYyMDM1Njc4OX0.jPP3blhK1bX9n6AqGH-uyUCu0SPwpC9IWSsCQk7uSZ8'
+    }
+    useEffect(() => {
+        axios.get('/api/UserInfo',{
+            headers: headers
+          })
+            .then((response) => {
+                console.log(response)
+            })
+            .catch(e=>{
+                console.log(e)
+            });
+    }, [setInfo]);
+
+    const submit = () => {
+        let errName = checkEmptyValidity(info.name)
+        setErrorName(errName)
+        let errEmail = checkEmailValidity(info.email)
+        setErrorEmail(errEmail)
+        let errSex = checkEmptyValidity(info.sex)
+        setErrorSex(errSex)
+        let errPhone = checkEmptyValidity(info.phone)
+        setErrorPhone(errPhone)
+        let errBirthday = checkEmptyValidity(info.birthday)
+        setErrorBirthday(errBirthday)
+
+        if (errName.length === 0 &&
+            errEmail.length === 0 &&
+            errSex.length === 0 &&
+            errorPhone.length === 0 &&
+            errBirthday.length === 0) {
+            const user = {
+                "userPhone": info.phone,
+                "userSex": info.sex,
+                "userBirthday": info.birthday,
+            };
+            axios.put('/api/UserInfo', user)
+                .then(response => {
+                    console.log(response.data)
+
+                })
+                .catch(e => {
+                    console.log(e.response.data.errors)
+                });
+
+        }
+
+    }
+
+    return (
+
+        <Form>
+            <h3>會員資料</h3>
+            <FormGroup disabled>
+                <Label for="name" >暱稱</Label>
+                <Input value={info.name} disabled type="text" onChange={setInfoName} name="name" id="name" placeholder="暱稱" />
+                <FormFeedback >{errorName}</FormFeedback>
+            </FormGroup>
+            <FormGroup disabled>
+                <Label for="email">Email</Label>
+                <Input value={info.email} disabled type="email" onChange={setInfoEmail} name="email" id="email" placeholder="email" />
+                <FormFeedback >{errorEmail}</FormFeedback>
+            </FormGroup>
+            <FormGroup>
+                <Label for="sex">性別</Label>
+                <Input invalid={errorSex.length > 0} value={info.sex} onChange={setInfoSex} type="select" name="sex" id="sex">
+                    <option value='M'>男</option>
+                    <option value='F'>女</option>
+                </Input>
+                <FormFeedback >{errorSex}</FormFeedback>
+            </FormGroup>
+            <FormGroup>
+                <Label for="phone">電話</Label>
+                <Input invalid={errorPhone.length > 0} type="number" onChange={setInfoPhone} name="phone" id="phone" placeholder="09xx 或 02xx" />
+                <FormFeedback >{errorPhone}</FormFeedback>
+            </FormGroup>
+            <FormGroup>
+                <Label for="birthday">生日</Label>
+                <Input
+                    invalid={errorBirthday.length > 0}
+                    type="date"
+                    name="birthday"
+                    id="birthday"
+                    onChange={setInfoBirthday}
+                />
+                <FormFeedback >{errorBirthday}</FormFeedback>
+            </FormGroup>
+            <Button className="btn btn-primary" onClick={() => submit()}>修改資料</Button>
+        </Form>
+    );
+
 
 }
 

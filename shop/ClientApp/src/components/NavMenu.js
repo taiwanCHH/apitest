@@ -14,7 +14,7 @@ export const NavMenu = () => {
 
   const [collapsed, setcollapsed] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(true);
   const [title, setTitle] = useState('Member');
 
   const toggle = () => setDropdownOpen(!dropdownOpen);
@@ -43,10 +43,10 @@ export const NavMenu = () => {
                   {title}
                 </DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem tag="login" onClick={toggleLogin} style={{ display: isAuth ? "none" : "block" }}>Sign in</DropdownItem>
+                  <DropdownItem tag="login" onClick={toggleLogin} style={{ display: isAuth ? "none" : "block" }}>Login</DropdownItem>
                   <DropdownItem tag={Link} to="/register" style={{ display: isAuth ? "none" : "block" }}>Register</DropdownItem>
-                  <DropdownItem tag="info" href="/info" style={{ display: isAuth ? "block" : "none" }}>Info</DropdownItem>
-                  <DropdownItem tag="changepw" href="/changepw" style={{ display: isAuth ? "block" : "none" }}>Change Password</DropdownItem>
+                  <DropdownItem tag={Link} to="/info" style={{ display: isAuth ? "block" : "none" }}>Info</DropdownItem>
+                  <DropdownItem tag={Link} href="/password" style={{ display: isAuth ? "block" : "none" }}>Change Password</DropdownItem>
                   <DropdownItem style={{ display: isAuth ? "block" : "none" }}>Log Out</DropdownItem>
                 </DropdownMenu>
               </Dropdown>

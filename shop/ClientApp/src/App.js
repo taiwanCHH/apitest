@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
-import { Member } from './components/Member';
+import { Member,Info } from './components/Member';
 import { CartTable } from './components/Cart';
 
 import './custom.css'
@@ -16,6 +16,7 @@ function App () {
         <Route exact path='/' component={Home} />
         <Route path='/cart' component={CartTable} />
         <Route path='/register' component={Member} />
+        <Route path='/info' component={Info} />
       </Layout>
     );
   }
