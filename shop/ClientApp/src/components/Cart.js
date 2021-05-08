@@ -1,6 +1,9 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import { ContextStore } from '../index.js';
-import { Button, Table, Alert } from 'reactstrap';
+import { Button, Table } from 'reactstrap';
+import { useHistory } from "react-router-dom";
+import * as ActionType from '../store/ActionType';
+import axios from 'axios';
 
 export function CartCount() {
     const value = React.useContext(ContextStore)
@@ -15,14 +18,35 @@ export function CartCount() {
 }
 
 export function CartTable() {
-    const { cart, dispatch } = React.useContext(ContextStore);
-    const deleteCartItem = (index) => {
-        // const cart = this.state.cart;
-        // cart.splice(index, 1);
 
-        // this.setState({
-        //   cart
-        // });
+    const { isAuth, cart, dispatch } = React.useContext(ContextStore);
+    const history = useHistory()
+    useEffect(() => {
+        if (!isAuth) {
+            history.push("/");
+        }
+    });
+    const totalPrice = cart.reduce((acc, item) => (acc += item.price), 0);
+
+    const token = localStorage.getItem('token')
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    }
+    const deleteCartItem = (id) => {
+        axios.delete('/api/Cart/' + id, {
+            headers: headers
+        })
+            .then(response => {
+                dispatch({ type: ActionType.DELETE_CART_ITEM, id: id })
+            })
+            .catch(e => {
+                console.log(e.response.data.errors)
+            });
+
+
+
+
     }
     return (
         <React.Fragment>
@@ -41,14 +65,15 @@ export function CartTable() {
                         cart.map((item, index) => (
                             <tr key={index} >
                                 <th scope="row">{index + 1}</th>
-                                <td width="250">{item.product.name}</td>
-                                <td>{item.product.price}</td>
-                                <td><Button color="danger" onClick={() => deleteCartItem(index)}>X</Button>{' '}</td>
+                                <td width="250">{item.name}</td>
+                                <td>{item.price}</td>
+                                <td><Button color="danger" onClick={() => deleteCartItem(item.id)}>X</Button>{' '}</td>
                             </tr>
                         ))
                     }
                 </tbody>
             </Table>
+            <Button className="btn btn-primary" onClick={() => alert('金額:' + totalPrice)}>結帳</Button>
         </React.Fragment>
     )
 }

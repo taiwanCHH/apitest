@@ -42,6 +42,23 @@ export const Member = (props) => {
             setToastShow(false)
         }, 3000)
     }
+    const getCart = () => {
+        const token = localStorage.getItem('token')
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+        axios.get('/api/Cart', {
+            headers: headers
+        })
+            .then((response) => {
+                dispatch({ type: ActionType.GET_CART, cart: response.data })
+            })
+            .catch(e => {
+                console.log(e)
+            });
+
+    }
 
     const sendLogin = () => {
         let errEmail = checkEmailValidity(infoLogin.email)
@@ -59,6 +76,7 @@ export const Member = (props) => {
                 .then(response => {
                     toggleAlert(true, '登入成功...即將回到首頁')
                     saveToken(response.data.token)
+                    getCart();
                     setTimeout(() => {
                         toggleLogin()
                         history.push("/");
@@ -235,7 +253,6 @@ export const Member = (props) => {
 }
 
 export const Info = () => {
-    const { cart, dispatch } = React.useContext(ContextStore);
     const [toastShow, setToastShow] = useState(false);
     const [toastColor, setToastColor] = useState(false);
     const [toastContent, setToastContent] = useState('hello');

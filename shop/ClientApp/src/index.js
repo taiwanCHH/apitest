@@ -28,6 +28,8 @@ function productsReducer(state, action) {
     case ActionType.AUTH_LOGIN: return authOpenLogin(state, action);
     case ActionType.AUTH_SUCCESS: return authLoginSucces(state, action);
     case ActionType.AUTH_LOGOUT: return authLogout(state, action);
+    case ActionType.GET_CART: return getCart(state, action);
+    case ActionType.DELETE_CART_ITEM: return deleteCartItem(state, action);
     default:
       return state;
   }
@@ -40,18 +42,32 @@ const authLogout = (state, action) => {
   return Object.assign({}, state, {
     title: 'Member',
     isAuth: false,
+    cart: [],
+    modalLogin: false,
   });
 }
 const authLoginSucces = (state, action) => {
-  console.log('auth: ' + state)
   return Object.assign({}, state, {
     title: action.name,
-    isAuth: true
+    isAuth: true    
   });
 }
 
+const getCart=(state, action)=>{
+  return Object.assign({}, state, {
+    cart: state.cart.concat(action.cart)
+  });
+}
+
+const deleteCartItem = (state,action) => {
+  const newCart = state.cart.filter((item) => item.id !== action.id);
+  return Object.assign({}, state, {
+    cart: newCart
+  });
+  
+}
+
 const authOpenLogin = (state, action) => {
-  console.log('auth: ' + state)
   return Object.assign({}, state, {
     modalLogin: !state.modalLogin
   });
@@ -59,17 +75,17 @@ const authOpenLogin = (state, action) => {
 const addProduct = (state, action) => {
   const token = localStorage.getItem('token')
   const headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + token
   }
-  axios.get('/api/Cart/'+action.product.id, {
+  axios.get('/api/Cart/' + action.product.id, {
     headers: headers
   })
     .then((response) => { console.log(response) })
     .catch(e => console.log(e));
 
   return Object.assign({}, state, {
-    cart: state.cart.concat({ id: action.product.id, product: action.product })
+    cart: state.cart.concat(action.product)
   });
 }
 

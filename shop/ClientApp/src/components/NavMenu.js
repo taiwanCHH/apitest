@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Collapse, Container, Navbar, NavbarBrand, NavbarToggler,
   NavItem, NavLink, Dropdown, DropdownItem, DropdownToggle, DropdownMenu

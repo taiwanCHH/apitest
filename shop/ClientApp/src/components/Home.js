@@ -77,6 +77,23 @@ export const Home = props => {
       setToastShow(false)
     }, 3000)
   }
+  const getCart = () => {
+    const token = localStorage.getItem('token')
+    const headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    }
+    axios.get('/api/Cart', {
+      headers: headers
+    })
+      .then((response) => {
+        dispatch({ type: ActionType.GET_CART, cart: response.data })
+      })
+      .catch(e => {
+        console.log(e)
+      });
+
+  }
 
   const saveToken = (token) => {
     let aa = token.split(".");
@@ -86,6 +103,7 @@ export const Home = props => {
     localStorage.setItem('name', jsonToken.sub);
     localStorage.setItem('email', jsonToken.email);
     dispatch({ type: ActionType.AUTH_SUCCESS, name: jsonToken.sub })
+    getCart();
     setTimeout(() => {
       toggleLogin()
     }, 3000)
@@ -121,16 +139,6 @@ export const Home = props => {
 
   }
 
-  const deleteCartItem = (index) => {
-    // const cart = this.state.cart;
-    // cart.splice(index, 1);
-
-    // this.setState({
-    //   cart
-    // });
-  }
-  // const totalPrice = cart.reduce((acc, item) => (acc += item.price), 0);
-
   return (
     <div>
       <div style={{ position: 'relative', zIndex: '1' }}>
@@ -144,7 +152,6 @@ export const Home = props => {
               products.map(product =>
                 <Product
                   key={product.id}
-
                   product={product}
                   onClick={addToCart}
                 />
