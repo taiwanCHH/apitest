@@ -1,13 +1,5 @@
 # Shopping Cart Demo
 
-商品頁
-![Imgur](https://i.imgur.com/XEm7RXQ.png)
-購物車頁
-![Imgur](https://i.imgur.com/oTWCXQt.png)
-註冊頁
-![Imgur](https://i.imgur.com/WeZOZ52.png)
-
-
 使用ReactStrap做基本EC商城Demo
 使用dotnet做api
 使用mysql做db
@@ -28,3 +20,12 @@ $ cd apitest/shop
 $ npm install                   # Install project dependencies
 $ dotnet "run" "--project" "xxx/Ec/shop/shop.csproj"                     # Compile and launch
 ```
+
+
+
+商品頁
+![Imgur](https://i.imgur.com/XEm7RXQ.png)
+購物車頁
+![Imgur](https://i.imgur.com/oTWCXQt.png)
+註冊頁
+![Imgur](https://i.imgur.com/WeZOZ52.png)
